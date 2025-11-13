@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-11-2025 a las 23:48:33
+-- Tiempo de generación: 14-11-2025 a las 00:33:58
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -218,6 +218,13 @@ CREATE TABLE `roles` (
   `estado` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `roles`
+--
+
+INSERT INTO `roles` (`id_rol`, `descripcion`, `estado`) VALUES
+(1, 'admin', 'ACTIVO');
+
 -- --------------------------------------------------------
 
 --
@@ -254,12 +261,20 @@ CREATE TABLE `tipo_producto` (
 CREATE TABLE `usuarios` (
   `id_usuario` int(11) NOT NULL,
   `nombre_usuario` varchar(100) NOT NULL,
-  `direccion_usuarios` varchar(100) NOT NULL,
-  `telefono` varchar(50) NOT NULL,
-  `email` varchar(50) NOT NULL,
-  `estado` varchar(10) NOT NULL,
-  `id_rol` int(11) NOT NULL
+  `nickname` varchar(50) NOT NULL,
+  `password` varchar(200) NOT NULL,
+  `id_rol` int(11) NOT NULL,
+  `intentos` int(11) NOT NULL,
+  `limite_intentos` int(10) NOT NULL,
+  `estado` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `usuarios`
+--
+
+INSERT INTO `usuarios` (`id_usuario`, `nombre_usuario`, `nickname`, `password`, `id_rol`, `intentos`, `limite_intentos`, `estado`) VALUES
+(1, 'felix benitez', 'felix', '202cb962ac59075b964b07152d234b70', 1, 0, 3, 'ACTIVO');
 
 --
 -- Índices para tablas volcadas
@@ -449,7 +464,7 @@ ALTER TABLE `proveedor`
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `stock`
@@ -461,7 +476,7 @@ ALTER TABLE `stock`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas
