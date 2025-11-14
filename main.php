@@ -163,6 +163,12 @@
               </a>
             </li>-->
             <li class="menu-item">
+              <a href="#" onclick="mostrarListaCiudades(); return false;" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-map"></i>
+                <div data-i18n="">Ciudades</div>
+              </a>
+            </li>
+            <li class="menu-item">
               <a href="#" onclick="mostrarListaDocentesGestion(); return false;" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-chalkboard"></i>
                 <div data-i18n="">Docentes</div>
@@ -422,6 +428,7 @@
 
 
     <script src="vista/util.js"></script>
+  <script src="vista/ciudad.js"></script>
     <script src="vista/alumnos.js"></script>
     <script src="vista/informes.js"></script>
     <script src="vista/bachilleratos.js"></script>
