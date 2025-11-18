@@ -146,6 +146,7 @@ function cargarTablaPedidosCompra() {
             fila += `<td><span class="badge bg-${item.estado === "ACTIVO" ? "success" : "danger"}">${item.estado}</span></td>`;
             fila += `<td class='text-end'>`;
             fila += `<button class='btn btn-info btn-sm ver-detalles-pedido' data-id='${item.pedido_compra}'><i data-feather="eye"></i></button> `;
+            fila += `<button class='btn btn-warning btn-sm imprimir-pedido' data-id='${item.pedido_compra}'><i data-feather="printer"></i></button> `;
             if (item.estado === "ACTIVO") {
                 fila += `<button class='btn btn-danger btn-sm anular-pedido' data-id='${item.pedido_compra}'><i data-feather="x-circle"></i></button>`;
             }
@@ -204,8 +205,17 @@ $(document).on("click", ".anular-pedido", function () {
     });
 });
 
-function imprimirPedidoCompra() {
-    mensaje_dialogo_info_ERROR("Función de impresión en desarrollo", "Información");
+$(document).on("click", ".imprimir-pedido", function () {
+    let id = $(this).data("id");
+    imprimirPedidoCompra(id);
+});
+
+function imprimirPedidoCompra(id_pedido) {
+    if (!id_pedido) {
+        mensaje_dialogo_info_ERROR("Debes seleccionar un pedido para imprimir", "Atención");
+        return;
+    }
+    window.open("paginas/movimientos/pedido_compra/print.php?id=" + id_pedido, "_blank");
 }
 
 function cancelarPedidoCompra() {
@@ -232,6 +242,7 @@ $(document).on("keyup", "#b_pedido_compra", function () {
             fila += `<td><span class="badge bg-${item.estado === "ACTIVO" ? "success" : "danger"}">${item.estado}</span></td>`;
             fila += `<td class='text-end'>`;
             fila += `<button class='btn btn-info btn-sm ver-detalles-pedido' data-id='${item.pedido_compra}'><i data-feather="eye"></i></button> `;
+            fila += `<button class='btn btn-warning btn-sm imprimir-pedido' data-id='${item.pedido_compra}'><i data-feather="printer"></i></button> `;
             if (item.estado === "ACTIVO") {
                 fila += `<button class='btn btn-danger btn-sm anular-pedido' data-id='${item.pedido_compra}'><i data-feather="x-circle"></i></button>`;
             }

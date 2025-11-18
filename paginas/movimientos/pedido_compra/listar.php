@@ -5,7 +5,6 @@
         </div>
         <div class="col-md-4 text-end">
             <button class="btn btn-primary" onclick="mostrarAgregarPedidoCompra(); return false;"><i class="fa fa-plus"></i> Agregar</button>
-            <button class="btn btn-warning" onclick="imprimirPedidoCompra(); return false;"><i class="fa fa-print"></i> Imprimir</button>
         </div>
         <div class="col-md-12">
             <hr>
