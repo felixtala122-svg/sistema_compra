@@ -21,11 +21,15 @@
         </div>
         <div class="col-md-6">
             <label for="producto_id_categoria" class="form-label">Categoría</label>
-            <input type="number" class="form-control" id="producto_id_categoria" placeholder="ID Categoría" value="0">
+            <select id="producto_id_categoria" class="form-select">
+                <option value="0">Selecciona una Categoría</option>
+            </select>
         </div>
         <div class="col-md-6">
             <label for="producto_id_tipo_producto" class="form-label">Tipo de Producto</label>
-            <input type="number" class="form-control" id="producto_id_tipo_producto" placeholder="ID Tipo de Producto" value="0">
+            <select id="producto_id_tipo_producto" class="form-select">
+                <option value="0">Selecciona un Tipo de Producto</option>
+            </select>
         </div>
         <div class="col-md-6">
             <label for="producto_estado" class="form-label">Estado *</label>
@@ -40,3 +44,12 @@
         </div>
     </div>
 </div>
+
+<script>
+$(document).ready(function() {
+    // Cargar categorías
+    cargarListaCategoriasActivos('#producto_id_categoria');
+    // Cargar tipos de producto
+    cargarListaTiposProductosActivos('#producto_id_tipo_producto');
+});
+</script>

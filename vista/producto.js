@@ -95,8 +95,17 @@ $(document).on("click", ".editar-producto", function () {
     $("#producto_nombre_producto").val(json_registro.nombre_producto);
     $("#producto_costo").val(json_registro.costo);
     $("#producto_precio").val(json_registro.precio);
-    $("#producto_id_categoria").val(json_registro.id_categoria);
-    $("#producto_id_tipo_producto").val(json_registro.id_tipo_producto);
+    
+    // Cargar listas desplegables
+    cargarListaCategoriasActivos('#producto_id_categoria');
+    cargarListaTiposProductosActivos('#producto_id_tipo_producto');
+    
+    // Establecer valores después de cargar
+    setTimeout(function(){
+        $("#producto_id_categoria").val(json_registro.id_categoria);
+        $("#producto_id_tipo_producto").val(json_registro.id_tipo_producto);
+    }, 300);
+    
     $("#producto_estado").val(json_registro.estado);
 });
 
