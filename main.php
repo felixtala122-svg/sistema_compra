@@ -195,6 +195,12 @@
                 <div data-i18n="">Stock</div>
               </a>
             </li>
+            <li class="menu-item">
+              <a href="#" onclick="mostrarListaRoles(); return false;" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-shield"></i>
+                <div data-i18n="">Roles</div>
+              </a>
+            </li>
           </ul>
         </aside>
         <!-- / Menu -->
@@ -384,6 +390,7 @@
     <script src="vista/categoria.js"></script>
     <script src="vista/tipo_producto.js"></script>
     <script src="vista/stock.js"></script>
+    <script src="vista/rol.js"></script>
     <script src="vista/alumnos.js"></script>
     <script src="vista/informes.js"></script>
     <script src="vista/bachilleratos.js"></script>
