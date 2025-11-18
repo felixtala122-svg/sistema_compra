@@ -1,5 +1,3 @@
-let detalles_temporales = [];
-
 function mostrarListaPedidosCompra() {
     let contenido = dameContenido("paginas/movimientos/pedido_compra/listar.php");
     $("#contenido-principal").html(contenido);
@@ -7,7 +5,6 @@ function mostrarListaPedidosCompra() {
 }
 
 function mostrarAgregarPedidoCompra() {
-    detalles_temporales = [];
     let contenido = dameContenido("paginas/movimientos/pedido_compra/agregar.php");
     $("#contenido-principal").html(contenido);
 }
@@ -29,42 +26,21 @@ function agregarDetalle() {
     // Obtener nombre del producto
     let nombre_producto = $("#pedido_compra_producto option:selected").text();
     
-    // Agregar a detalles temporales
-    detalles_temporales.push({
-        id_productos: id_producto,
-        nombre_producto: nombre_producto,
-        cantidad: cantidad
-    });
+    // Agregar fila a la tabla
+    let fila = `<tr>`;
+    fila += `<td><input type="hidden" class="producto_id" value="${id_producto}">${nombre_producto}</td>`;
+    fila += `<td><input type="hidden" class="producto_cantidad" value="${cantidad}">${cantidad}</td>`;
+    fila += `<td class='text-end'>`;
+    fila += `<button class='btn btn-danger btn-sm eliminar-detalle-btn' type="button"><i data-feather="trash-2"></i></button>`;
+    fila += `</td>`;
+    fila += `</tr>`;
+    
+    $("#detalles_pedido_tb").append(fila);
+    feather.replace();
     
     // Limpiar campos
     $("#pedido_compra_producto").val("0");
     $("#pedido_compra_cantidad").val("1");
-    
-    // Actualizar tabla
-    renderizarDetallesPedido();
-}
-
-function renderizarDetallesPedido() {
-    let fila = "";
-    if (detalles_temporales.length === 0) {
-        fila = `<tr><td colspan='3' class='text-center'>No hay productos agregados</td></tr>`;
-    } else {
-        detalles_temporales.forEach(function(item, index) {
-            fila += `<tr>`;
-            fila += `<td>${item.nombre_producto}</td>`;
-            fila += `<td>${item.cantidad}</td>`;
-            fila += `<td class='text-end'>`;
-            fila += `<button class='btn btn-danger btn-sm' onclick="eliminarDetalle(${index}); return false;">Eliminar</button>`;
-            fila += `</td>`;
-            fila += `</tr>`;
-        });
-    }
-    $("#detalles_pedido_tb").html(fila);
-}
-
-function eliminarDetalle(index) {
-    detalles_temporales.splice(index, 1);
-    renderizarDetallesPedido();
 }
 
 function guardarPedidoCompra() {
@@ -73,21 +49,87 @@ function guardarPedidoCompra() {
         return;
     }
     
-    if (detalles_temporales.length === 0) {
+    let detalles = [];
+    $("#detalles_pedido_tb tr").each(function() {
+        let id_producto = $(this).find(".producto_id").val();
+        let cantidad = $(this).find(".producto_cantidad").val();
+        if (id_producto && cantidad) {
+            detalles.push({
+                id_productos: id_producto,
+                cantidad: cantidad
+            });
+        }
+    });
+    
+    if (detalles.length === 0) {
         mensaje_dialogo_info_ERROR("Debes agregar al menos un producto", "ATENCIÓN");
         return;
     }
     
+    // Cabecera del pedido
     let cabecera = {
         fecha_compra: $("#pedido_compra_fecha").val(),
         id_usuario: $("#pedido_compra_usuario").val(),
-        detalles: detalles_temporales
+        estado: 'ACTIVO'
     };
     
-    ejecutarAjax("controladores/pedido_compra.php", "guardar=" + JSON.stringify(cabecera));
-    mensaje_confirmacion("Pedido guardado correctamente", "Éxito");
-    mostrarListaPedidosCompra();
+    // Guardar la cabecera primero
+    let respuesta_cabecera = ejecutarAjax("controladores/pedido_compra.php", "guardar=" + JSON.stringify(cabecera));
+    
+    try {
+        let json_cabecera = JSON.parse(respuesta_cabecera);
+        
+        if (json_cabecera.error) {
+            mensaje_dialogo_info_ERROR(json_cabecera.error, "Error al guardar pedido");
+            return;
+        }
+        
+        if (!json_cabecera.success || !json_cabecera.id_pedido) {
+            mensaje_dialogo_info_ERROR("No se generó ID para el pedido", "Error");
+            return;
+        }
+        
+        let id_pedido = json_cabecera.id_pedido;
+        console.log("CABECERA -> ID Pedido: " + id_pedido);
+        
+        // Guardar detalles uno por uno
+        $("#detalles_pedido_tb tr").each(function() {
+            let id_producto = $(this).find(".producto_id").val();
+            let cantidad = $(this).find(".producto_cantidad").val();
+            
+            if (id_producto && cantidad) {
+                let detalle = {
+                    pedido_compra: id_pedido,
+                    id_productos: id_producto,
+                    cantidad: cantidad
+                };
+                
+                let respuesta_detalle = ejecutarAjax("controladores/detalle_pedido.php", "guardar=" + JSON.stringify(detalle));
+                console.log("DETALLE -> " + respuesta_detalle);
+                
+                try {
+                    let json_detalle = JSON.parse(respuesta_detalle);
+                    if (json_detalle.error) {
+                        console.error("Error en detalle:", json_detalle.error);
+                    }
+                } catch (e) {
+                    console.error("Error al parsear detalle:", respuesta_detalle);
+                }
+            }
+        });
+        
+        mensaje_confirmacion("Pedido guardado correctamente", "Éxito");
+        mostrarListaPedidosCompra();
+        
+    } catch (e) {
+        console.error("Error al parsear cabecera:", respuesta_cabecera);
+        mensaje_dialogo_info_ERROR("Error al procesar la respuesta del servidor", "Error");
+    }
 }
+
+$(document).on("click", ".eliminar-detalle-btn", function () {
+    $(this).closest("tr").remove();
+});
 
 function cargarTablaPedidosCompra() {
     let datos = ejecutarAjax("controladores/pedido_compra.php", "listar=1");

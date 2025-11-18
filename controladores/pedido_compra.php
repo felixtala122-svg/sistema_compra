@@ -25,6 +25,48 @@ if (isset($_POST['obtener_detalles'])) {
     obtener_detalles($_POST['obtener_detalles']);
 }
 
+function guardar($lista) {
+    $json_datos = json_decode($lista, true);
+    $base_datos = new DB();
+    $conexion = $base_datos->conectar();
+    
+    try {
+        // Habilitar excepciones en PDO
+        $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Insertar pedido_compra
+        $query = $conexion->prepare(
+            "INSERT INTO pedido_compra (fecha_compra, estado, id_usuario)
+             VALUES (:fecha_compra, :estado, :id_usuario);"
+        );
+        $params = [
+            'fecha_compra' => !empty($json_datos['fecha_compra']) ? $json_datos['fecha_compra'] : date('Y-m-d'),
+            'estado' => 'ACTIVO',
+            'id_usuario' => !empty($json_datos['id_usuario']) ? $json_datos['id_usuario'] : 1,
+        ];
+        
+        if (!$query->execute($params)) {
+            echo json_encode(['error' => 'No se pudo insertar el pedido']);
+            return;
+        }
+        
+        // Obtener el ID del pedido insertado
+        $id_pedido = $conexion->lastInsertId();
+        
+        if (!$id_pedido) {
+            echo json_encode(['error' => 'No se generó ID para el pedido']);
+            return;
+        }
+        
+        echo json_encode(['success' => 'Pedido guardado correctamente', 'id_pedido' => $id_pedido]);
+        
+    } catch (PDOException $e) {
+        echo json_encode(['error' => 'Error PDO: ' . $e->getMessage()]);
+    } catch (Exception $e) {
+        echo json_encode(['error' => 'Error: ' . $e->getMessage()]);
+    }
+}
+
 function listar() {
     $base_datos = new DB();
     $query = $base_datos->conectar()->prepare(
@@ -38,41 +80,6 @@ function listar() {
         print_r(json_encode($query->fetchAll(PDO::FETCH_OBJ)));
     } else {
         echo '0';
-    }
-}
-
-function guardar($lista) {
-    $json_datos = json_decode($lista, true);
-    $base_datos = new DB();
-    
-    // Insertar pedido_compra
-    $query = $base_datos->conectar()->prepare(
-        "INSERT INTO pedido_compra (fecha_compra, estado, id_usuario)
-         VALUES (:fecha_compra, :estado, :id_usuario);"
-    );
-    $params = [
-        'fecha_compra' => !empty($json_datos['fecha_compra']) ? $json_datos['fecha_compra'] : date('Y-m-d'),
-        'estado' => 'ACTIVO',
-        'id_usuario' => !empty($json_datos['id_usuario']) ? $json_datos['id_usuario'] : 1,
-    ];
-    $query->execute($params);
-    
-    // Obtener el ID del pedido insertado
-    $id_pedido = $base_datos->conectar()->lastInsertId();
-    
-    // Insertar detalles
-    if (!empty($json_datos['detalles']) && is_array($json_datos['detalles'])) {
-        foreach ($json_datos['detalles'] as $detalle) {
-            $query_detalle = $base_datos->conectar()->prepare(
-                "INSERT INTO detalle_pedido (cantidad, pedido_compra, id_productos)
-                 VALUES (:cantidad, :pedido_compra, :id_productos);"
-            );
-            $query_detalle->execute([
-                'cantidad' => $detalle['cantidad'],
-                'pedido_compra' => $id_pedido,
-                'id_productos' => $detalle['id_productos'],
-            ]);
-        }
     }
 }
 

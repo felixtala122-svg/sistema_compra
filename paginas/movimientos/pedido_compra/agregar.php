@@ -56,9 +56,6 @@
 </div>
 
 <script>
-// Variable global para almacenar detalles temporales
-let detalles_temporales = [];
-
 $(document).ready(function() {
     // Establecer fecha actual
     let hoy = new Date();
