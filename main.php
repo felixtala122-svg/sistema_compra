@@ -189,6 +189,12 @@
                 <div data-i18n="">Tipos de Producto</div>
               </a>
             </li>
+            <li class="menu-item">
+              <a href="#" onclick="mostrarListaStock(); return false;" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-cube"></i>
+                <div data-i18n="">Stock</div>
+              </a>
+            </li>
           </ul>
         </aside>
         <!-- / Menu -->
@@ -377,6 +383,7 @@
     <script src="vista/producto.js"></script>
     <script src="vista/categoria.js"></script>
     <script src="vista/tipo_producto.js"></script>
+    <script src="vista/stock.js"></script>
     <script src="vista/alumnos.js"></script>
     <script src="vista/informes.js"></script>
     <script src="vista/bachilleratos.js"></script>
