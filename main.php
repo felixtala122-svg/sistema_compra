@@ -212,6 +212,11 @@
               </a>
               <ul class="menu-sub">
                 <li class="menu-item">
+                  <a href="#" onclick="mostrarListaPresupuestos(); return false;" class="menu-link">
+                    <div data-i18n="">Presupuesto</div>
+                  </a>
+                </li>
+                <li class="menu-item">
                   <a href="#" onclick="mostrarListaOrdenesCompra(); return false;" class="menu-link">
                     <div data-i18n="">Orden de Compra</div>
                   </a>
@@ -408,6 +413,7 @@
     <script src="vista/tipo_producto.js"></script>
     <script src="vista/stock.js"></script>
     <script src="vista/rol.js"></script>
+    <script src="vista/presupuesto.js"></script>
     <script src="vista/orden_compra.js"></script>
     <script src="vista/alumnos.js"></script>
     <script src="vista/informes.js"></script>
