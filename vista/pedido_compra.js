@@ -147,6 +147,7 @@ function cargarTablaPedidosCompra() {
             fila += `<td class='text-end'>`;
             fila += `<button class='btn btn-info btn-sm ver-detalles-pedido' data-id='${item.pedido_compra}'><i data-feather="eye"></i></button> `;
             fila += `<button class='btn btn-warning btn-sm imprimir-pedido' data-id='${item.pedido_compra}'><i data-feather="printer"></i></button> `;
+            fila += `<button class='btn btn-primary btn-sm crear-comparador' data-id='${item.pedido_compra}'>Comparador</button> `;
             if (item.estado === "ACTIVO") {
                 fila += `<button class='btn btn-danger btn-sm anular-pedido' data-id='${item.pedido_compra}'><i data-feather="x-circle"></i></button>`;
             }
@@ -210,6 +211,59 @@ $(document).on("click", ".imprimir-pedido", function () {
     imprimirPedidoCompra(id);
 });
 
+// Crear comparador a partir de un pedido
+$(document).on("click", ".crear-comparador", function () {
+    let id = $(this).data("id");
+    crearComparadorDesdePedido(id);
+});
+
+function crearComparadorDesdePedido(id_pedido) {
+    if (!id_pedido) {
+        mensaje_dialogo_info_ERROR("Debe seleccionar un pedido válido", "Atención");
+        return;
+    }
+
+    let datos = ejecutarAjax("controladores/pedido_compra.php", "obtener_detalles=" + id_pedido);
+    if (datos === "0") {
+        mensaje_dialogo_info_ERROR("No hay detalles para este pedido", "Información");
+        return;
+    }
+
+    try {
+        let detalles = JSON.parse(datos);
+
+        // Cargar la vista del comparador
+        let contenido = dameContenido("paginas/movimientos/comparador_presupuesto/agregar.php");
+        $("#contenido-principal").html(contenido);
+
+        setTimeout(function() {
+            if ($('#comparador_fecha').length) {
+                let hoy = new Date();
+                let fecha = hoy.toISOString().split('T')[0];
+                if (!$('#comparador_fecha').val()) $('#comparador_fecha').val(fecha);
+            }
+
+            if (Array.isArray(detalles) && detalles.length > 0) {
+                detalles.forEach(function(item) {
+                    let fila = `<tr>`;
+                    fila += `<td><input type="hidden" class="producto_id" value="${item.id_productos}">${item.nombre_producto}</td>`;
+                    fila += `<td><input type="hidden" class="producto_cantidad" value="${item.cantidad}">${item.cantidad}</td>`;
+                    fila += `<td class='text-end'>`;
+                    fila += `<button class='btn btn-danger btn-sm eliminar-detalle-comp-btn' type="button"><i data-feather="trash-2"></i></button>`;
+                    fila += `</td>`;
+                    fila += `</tr>`;
+                    $("#detalles_comparador_tb").append(fila);
+                });
+                feather.replace();
+            }
+        }, 120);
+
+    } catch (e) {
+        console.error('Error al parsear detalles del pedido:', datos);
+        mensaje_dialogo_info_ERROR("Error al procesar los detalles del pedido", "Error");
+    }
+}
+
 function imprimirPedidoCompra(id_pedido) {
     if (!id_pedido) {
         mensaje_dialogo_info_ERROR("Debes seleccionar un pedido para imprimir", "Atención");
@@ -243,6 +297,7 @@ $(document).on("keyup", "#b_pedido_compra", function () {
             fila += `<td class='text-end'>`;
             fila += `<button class='btn btn-info btn-sm ver-detalles-pedido' data-id='${item.pedido_compra}'><i data-feather="eye"></i></button> `;
             fila += `<button class='btn btn-warning btn-sm imprimir-pedido' data-id='${item.pedido_compra}'><i data-feather="printer"></i></button> `;
+            fila += `<button class='btn btn-primary btn-sm crear-comparador' data-id='${item.pedido_compra}'>Comparador</button> `;
             if (item.estado === "ACTIVO") {
                 fila += `<button class='btn btn-danger btn-sm anular-pedido' data-id='${item.pedido_compra}'><i data-feather="x-circle"></i></button>`;
             }
